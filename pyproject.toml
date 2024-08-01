@@ -1,0 +1,17 @@
+[build-system]
+requires = ["flit_core >= 3.4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+version = "0.0.1a1"
+
+dependencies = [
+    "python-chess",
+    "torch==2.1.1",
+    "numpy==1.26.2"
+]
+
+name = "carlomagno"
+requires-python = ">= 3.9"
+description = "AI-Based chess engine"
+readme = "README.md"
