@@ -7,9 +7,11 @@ import os
 class BoardEvaluator():
     
     def __init__(self, model=None):
-        if model is not None and os.path.exists(model):            
+        if model is not None and os.path.exists(model):
+            print('Loading model from file')
             self.model = torch.load(model)
         else:
+            print('Loading new model')
             self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
         
         self.model.eval()

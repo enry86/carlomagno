@@ -1,7 +1,7 @@
 import chess
 import chess.pgn
 
-def board_to_vector(board):
+def board_to_vector(board, turn):
     vec = []
     index = 0 
     for square in chess.SQUARES:        
@@ -11,17 +11,18 @@ def board_to_vector(board):
             vec.append(float(piece_val))
         else:
             vec.append(0.0)
+    vec.append(turn)
     return vec
 
 def get_boards_from_game(game):
-    res = []    
-    white_win = -1.0
+    res = []        
     if game.headers['Termination'] != 'Normal':
         return res
     
+    prize = 1.0
     if game.headers['Result'] == '1-0':
-        white_win = 1.0
-    elif game.headers['Result'] != '0-1':
+        prize = -1.0
+    if game.headers['Result'] != '0-1':
         return res        
         
     moves = game.mainline_moves()
@@ -30,14 +31,15 @@ def get_boards_from_game(game):
     for move in moves:
         turn *= -1.0
         board.push(move)
-        board_vec = board_to_vector(board)
-        board_vec.append(turn)
+        board_vec = board_to_vector(board, turn)        
         res.append([board_vec, 0.0])
     
-    mov_cnt = len(res) - 1
+    mov_cnt = len(res)
+    prize_step = prize / mov_cnt
+    curr_prize = 0.0
     for elem in res:
-        elem[1] = float(mov_cnt)
-        mov_cnt -= white_win
+        curr_prize += prize_step
+        elem[1] = float(curr_prize)        
     return res
         
 
