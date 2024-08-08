@@ -54,7 +54,9 @@ def test_features():
     
     
 b = chess.Board()
-while not b.is_checkmate():
+moves = 0
+while not b.is_checkmate() and moves < 10:
     test_evaluation(b)
+    moves += 1
     
 

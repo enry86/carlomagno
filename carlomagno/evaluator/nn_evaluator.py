@@ -5,13 +5,17 @@ from torch import nn
 from collections import OrderedDict
 import copy
 
-device = "cuda" if torch.cuda.is_available() else "cpu"
+
 
 class NNEvalutator(nn.Module):
+    device = None
+    
     def __init__(self, inputs, outputs, hidden, layers_cnt):
         super().__init__()
+        dev = "cuda:0" if torch.cuda.is_available() else "cpu"
+        self.device = torch.device(dev)
         layers = []
-
+        
         layers.append(('input', nn.Linear(in_features=inputs, out_features=hidden)))
         layers.append(('relu_1', nn.ReLU()))
         for i in range(layers_cnt):
@@ -23,9 +27,11 @@ class NNEvalutator(nn.Module):
         
         self.loss_fn = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.0001)
+        self.to(self.device)
 
 
     def forward(self, x):
+        x.to(self.device)
         return self.layers_stack(x)
 
     def evaluate(self, features):
