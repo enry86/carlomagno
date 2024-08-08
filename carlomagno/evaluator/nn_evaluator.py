@@ -27,6 +27,7 @@ class NNEvalutator(nn.Module):
         
         self.loss_fn = nn.MSELoss()
         self.optimizer = torch.optim.Adam(self.parameters(), lr=0.0001)
+        self.layers_stack.to(self.device)
         self.to(self.device)
 
 
