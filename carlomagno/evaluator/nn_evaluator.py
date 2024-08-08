@@ -32,7 +32,7 @@ class NNEvalutator(nn.Module):
 
 
     def forward(self, x):
-        x.to(self.device)
+        x = x.to(self.device)
         return self.layers_stack(x)
 
     def evaluate(self, features):
