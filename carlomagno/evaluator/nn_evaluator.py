@@ -46,6 +46,9 @@ class NNEvalutator(nn.Module):
         min_loss = None        
         best_model = None
         
+        train_y = train_y.to(self.device)
+        test_y = test_y.to(self.device)
+        
         for epoch in range(epochs):
             self.train()
             pred_y = self.forward(train_x)
