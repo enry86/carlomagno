@@ -52,11 +52,30 @@ def test_features():
     print(cm.read_games_from_file('data/lichess_db_standard_rated_2013-01.pgn', 1))
     
     
+def test_play():    
+    b = chess.Board()
+    moves = 0
+    while not b.is_checkmate() and moves < 10:
+        test_evaluation(b)
+        moves += 1  
+        
+def test_rating():
+    fin = open('data/lichess_db_standard_rated_2013-01.pgn')
+    game = chess.pgn.read_game(fin)
+    b = game.board()    
+    for m in game.mainline_moves():
+        turn = 1.0
+        b.push(m)
+        if not b.turn:
+            turn = -1.0
+        v = cm.board_to_vector(b, turn)    
+        print('Turn:', turn)
+        print(b)        
+        print('Score:', be.evaluate(v))
+    print(game.headers['Result'])
+    print(b.is_checkmate())
     
-b = chess.Board()
-moves = 0
-while not b.is_checkmate() and moves < 10:
-    test_evaluation(b)
-    moves += 1
+test_rating()
+    
     
 

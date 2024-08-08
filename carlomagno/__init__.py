@@ -22,7 +22,7 @@ def get_boards_from_game(game):
     prize = 1.0
     if game.headers['Result'] == '1-0':
         prize = -1.0
-    if game.headers['Result'] != '0-1':
+    elif game.headers['Result'] != '0-1':
         return res        
         
     moves = game.mainline_moves()
