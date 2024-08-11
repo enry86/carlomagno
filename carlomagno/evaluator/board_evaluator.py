@@ -7,9 +7,12 @@ import os
 class BoardEvaluator():
     
     def __init__(self, model=None):
+        dev = "cuda:0" if torch.cuda.is_available() else "cpu"
+        device = torch.device(dev)
         if model is not None and os.path.exists(model):
             print('Loading model from file')
-            self.model = torch.load(model)
+            self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
+            self.model.load_state_dict(torch.load(model, map_location=device))
         else:
             print('Loading new model')
             self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
