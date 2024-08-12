@@ -71,5 +71,5 @@ class NNEvalutator(nn.Module):
                 min_loss = test_loss
                 best_model = copy.deepcopy(self)
             
-        torch.save(best_model, output)
+        torch.save(best_model.state_dict(), output)
         print(f"Model stored in [{output}] with Loss {min_loss:.5f}")
