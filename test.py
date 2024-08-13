@@ -4,9 +4,9 @@ import carlomagno as cm
 from carlomagno.evaluator import board_evaluator
 import chess
 import chess.pgn
+import random
 
 be = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state')
-be_rnd = board_evaluator.BoardEvaluator()
 
 def test_evaluation(b):    
     best_score = 0.0
@@ -84,7 +84,7 @@ def test_play():
     board = chess.Board()
     game_ended = board.is_checkmate() or board.is_stalemate()
     while not game_ended:
-        move, score = be_rnd.select_move(board)
+        move, score = get_random_move(board)
         #print(f'RND WHITE: MOVE: [{move}], SCORE: [{score}]')
         if move == None:
             #print('DRAW')
@@ -115,18 +115,31 @@ def test_play():
     return res
 
 
+def get_random_move(board):
+    moves = []
+    for m in board.legal_moves:
+        moves.append(m)
+        board.push(m)
+        if board.is_checkmate():
+            board.pop()
+            return (m, 1.0)
+        board.pop()
+    return (random.choice(moves), 0.0)
+    
+    
+
 
 def test_play_sequence(games):
     counts = {}
     for g in range(games):
-        be.reset_boards()
-        be_rnd = board_evaluator.BoardEvaluator()
+        be.reset_boards()        
         res = test_play()
         if res not in counts:
             counts[res] = 1.0 / games
         else:
             counts[res] += 1.0 / games
-        print(f'Game {g+1}: {counts}')
+        print(f'Game {g+1}: [{res}] {counts}')
+        be_rnd = None
     print(counts)        
     
 test_play_sequence(10)    

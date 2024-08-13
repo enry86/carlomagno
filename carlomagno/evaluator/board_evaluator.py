@@ -19,7 +19,7 @@ class BoardEvaluator():
             self.model.load_state_dict(torch.load(model, map_location=device))
         else:
             print('Loading new model')
-            self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
+            self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)            
         self.boards.clear()
         self.model.eval()
         
