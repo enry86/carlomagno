@@ -5,8 +5,8 @@ from carlomagno.evaluator import board_evaluator
 import chess
 import chess.pgn
 
-be = board_evaluator.BoardEvaluator('be_norm_v0.0.0.model')
-
+be = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state')
+be_rnd = board_evaluator.BoardEvaluator()
 
 def test_evaluation(b):    
     best_score = 0.0
@@ -52,7 +52,7 @@ def test_features():
     print(cm.read_games_from_file('data/lichess_db_standard_rated_2013-01.pgn', 1))
     
     
-def test_play():    
+def test_eval():    
     b = chess.Board()
     moves = 0
     while not b.is_checkmate() and moves < 10:
@@ -75,7 +75,59 @@ def test_rating():
     print(game.headers['Result'])
     print(b.is_checkmate())
     
-test_rating()
     
+def test_play():
+    white_win = False
+    draw = False
+    score = 0.0
+    res = 0
+    board = chess.Board()
+    game_ended = board.is_checkmate() or board.is_stalemate()
+    while not game_ended:
+        move, score = be_rnd.select_move(board)
+        #print(f'RND WHITE: MOVE: [{move}], SCORE: [{score}]')
+        if move == None:
+            #print('DRAW')
+            draw = True
+            game_ended = True
+            continue
+        board.push(move)
+        game_ended = board.is_checkmate() or board.is_stalemate()
+        if not game_ended:
+            move, score = be.select_move(board)
+            #print(f'CM BLACK: MOVE: [{move}], SCORE: [{score}]')   
+            if move == None:
+                #print('DRAW')
+                draw = True
+                game_ended = True
+                continue
+            board.push(move)
+            game_ended = board.is_checkmate() or board.is_stalemate()
+        else:
+            white_win = True
+            res = -1
+            #print('WHITE WINS')
+    if not white_win and not draw:
+        res = 1
+        #print('BLACK WINS')
+    #print(f'GAME ENDED: LAST SCORE [{score}]')
+    
+    return res
+
+
+
+def test_play_sequence(games):
+    counts = {}
+    for g in range(games):
+        be.reset_boards()
+        be_rnd = board_evaluator.BoardEvaluator()
+        res = test_play()
+        if res not in counts:
+            counts[res] = 1.0 / games
+        else:
+            counts[res] += 1.0 / games
+    print(counts)        
+    
+test_play_sequence(10)    
     
 
