@@ -126,6 +126,7 @@ def test_play_sequence(games):
             counts[res] = 1.0 / games
         else:
             counts[res] += 1.0 / games
+        print(f'Game {g+1}: {counts}')
     print(counts)        
     
 test_play_sequence(10)    
