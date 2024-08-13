@@ -5,20 +5,21 @@ import carlomagno as cm
 from carlomagno.evaluator import nn_evaluator
 import os
 import chess
-
+import random
 
 class BoardEvaluator():
     boards = set()
     
-    def __init__(self, model=None):
+    def __init__(self, model=None, sigma=0.0):
+        self.sigma = sigma
         dev = "cuda:0" if torch.cuda.is_available() else "cpu"
         device = torch.device(dev)
         if model is not None and os.path.exists(model):
-            print('Loading model from file')
+            print(f'Loading model from file: [{model}] with sigma: [{self.sigma}]')
             self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
             self.model.load_state_dict(torch.load(model, map_location=device))
         else:
-            print('Loading new model')
+            print(f'Loading new model with sigma: [{self.sigma}]')
             self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)            
         self.boards.clear()
         self.model.eval()
@@ -53,7 +54,7 @@ class BoardEvaluator():
                 board.pop()
                 continue
             
-            score = self.evaluate(v)
+            score = self.evaluate(v) + random.gauss(0, self.sigma)
             #print(f'Move [{m}]: Score: [{score}]')
 
             if board.is_checkmate():

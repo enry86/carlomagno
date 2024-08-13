@@ -6,7 +6,7 @@ import chess
 import chess.pgn
 import random
 
-be = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state')
+be = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.1)
 
 def test_evaluation(b):    
     best_score = 0.0
