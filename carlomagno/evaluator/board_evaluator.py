@@ -20,7 +20,7 @@ class BoardEvaluator():
         else:
             print('Loading new model')
             self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
-        self.boards = set()
+        self.boards.clear()
         self.model.eval()
         
     def evaluate(self, input):
