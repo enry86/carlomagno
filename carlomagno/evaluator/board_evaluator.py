@@ -37,6 +37,7 @@ class BoardEvaluator():
         
     
     def select_move(self, board):
+        print(len(self.boards))
         sel_board = None
         best_move = None
         best_score = 0.0
