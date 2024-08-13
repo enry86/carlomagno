@@ -83,5 +83,7 @@ class BoardEvaluator():
         return (best_move, best_score)
 
     def reset_boards(self):
+        print('Clearing boards', len(self.boards))
         self.boards.clear()
+        print('boards cleared', len(self.boards))
     
