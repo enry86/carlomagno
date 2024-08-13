@@ -48,6 +48,7 @@ class BoardEvaluator():
             board.push(m)                        
             v = cm.board_to_vector(board, next_turn)
             str_v = '|'.join(map(lambda x: str(x), v)) 
+            print(len(self.boards))
             if str_v in self.boards:
                 #print(f'Board [{str_v}] already played, skip move to avoid loops')
                 board.pop()
