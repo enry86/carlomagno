@@ -12,18 +12,19 @@ def test_evaluation(b):
     best_score = 0.0
     best_move = None
     current_turn = b.turn
-    next_turn = 1.0
-    if current_turn:
-        next_turn = -1.0
-        
+
+    v = cm.board_to_vector(b)
+    print(f'Board: {v}')
+    
     if current_turn:
         print('WHITE')
     else:
         print('BLACK')
     for m in b.legal_moves:
         b.push(m)                        
-        v = cm.board_to_vector(b, next_turn)
+        v = cm.board_to_vector(b)
         score = be.evaluate(v)
+        print(f'Board: {v}')
         print(f'Move [{m}]: Score: [{score}]')
         
         if b.is_checkmate():

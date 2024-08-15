@@ -1,9 +1,9 @@
 import chess
 import chess.pgn
 
-def board_to_vector(board, turn):
+def board_to_vector(board):    
     vec = []
-    index = 0 
+    index = 0     
     for square in chess.SQUARES:        
         piece = board.piece_at(square)
         if piece:
@@ -11,6 +11,9 @@ def board_to_vector(board, turn):
             vec.append(float(piece_val))
         else:
             vec.append(0.0)
+    turn = -1.0
+    if board.turn:
+        turn = 1.0
     vec.append(turn)
     return vec
 
@@ -27,11 +30,9 @@ def get_boards_from_game(game):
         
     moves = game.mainline_moves()
     board = game.board()
-    turn = 1.0
     for move in moves:
-        turn *= -1.0
         board.push(move)
-        board_vec = board_to_vector(board, turn)        
+        board_vec = board_to_vector(board)        
         res.append([board_vec, 0.0])
     
     mov_cnt = len(res)

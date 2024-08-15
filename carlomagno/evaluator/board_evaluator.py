@@ -41,13 +41,10 @@ class BoardEvaluator():
         sel_board = None
         best_move = None
         best_score = 0.0
-        next_turn = 1.0
         current_turn = board.turn 
-        if current_turn:
-            next_turn = -1.0
         for m in board.legal_moves:                   
             board.push(m)                        
-            v = cm.board_to_vector(board, next_turn)
+            v = cm.board_to_vector(board)
             str_v = '|'.join(map(lambda x: str(x), v))             
             if str_v in self.boards:
                 #print(f'Board [{str_v}] already played, skip move to avoid loops')
@@ -82,6 +79,12 @@ class BoardEvaluator():
         self.boards.add(sel_board)
         return (best_move, best_score)
 
+    def eval_moves(self, board):
+        for m in board.legal_moves:
+            board.push(m)
+            
+    
+    
     def reset_boards(self):
         self.boards.clear()
     
