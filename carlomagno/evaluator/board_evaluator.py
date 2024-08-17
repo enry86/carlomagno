@@ -60,7 +60,10 @@ class BoardEvaluator():
     def eval_moves(self, board, level=0, source_move=None):
         for m in board.legal_moves:
             board.push(m)
-            str_b = cm.board_to_string(board)                
+            str_b = cm.board_to_string(board)
+            if board.is_checkmate():
+                board.pop()
+                return (m, -1.0 if board.turn else 1.0 , True)
             if str_b in self.boards:
                 board.pop()
                 continue

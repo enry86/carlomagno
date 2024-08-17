@@ -6,8 +6,8 @@ import chess
 import chess.pgn
 import random
 
-be_w = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.0, look_ahead=1)
-be_b = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.0)
+be_w = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.01, look_ahead=0)
+be_b = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.01)
 
 def test_evaluation(b):    
     best_score = 0.0
