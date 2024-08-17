@@ -6,7 +6,8 @@ import chess
 import chess.pgn
 import random
 
-be = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.1)
+be_w = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.0, look_ahead=1)
+be_b = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.0)
 
 def test_evaluation(b):    
     best_score = 0.0
@@ -85,7 +86,7 @@ def test_play():
     board = chess.Board()
     game_ended = board.is_checkmate() or board.is_stalemate()
     while not game_ended:
-        move, score = get_random_move(board)
+        move, score = be_w.select_move(board)
         #print(f'RND WHITE: MOVE: [{move}], SCORE: [{score}]')
         if move == None:
             #print('DRAW')
@@ -95,7 +96,7 @@ def test_play():
         board.push(move)
         game_ended = board.is_checkmate() or board.is_stalemate()
         if not game_ended:
-            move, score = be.select_move(board)
+            move, score = be_b.select_move(board)
             #print(f'CM BLACK: MOVE: [{move}], SCORE: [{score}]')   
             if move == None:
                 #print('DRAW')
@@ -108,6 +109,7 @@ def test_play():
             white_win = True
             res = -1
             #print('WHITE WINS')
+        
     if not white_win and not draw:
         res = 1
         #print('BLACK WINS')
@@ -133,7 +135,6 @@ def get_random_move(board):
 def test_play_sequence(games):
     counts = {}
     for g in range(games):
-        be.reset_boards()        
         res = test_play()
         if res not in counts:
             counts[res] = 1.0 / games
@@ -143,6 +144,15 @@ def test_play_sequence(games):
         be_rnd = None
     print(counts)        
     
-test_play_sequence(10)    
+    
+def test_eval_recursive():
+    b = chess.Board()
+    move = be_w.select_move(b)
+    move_b = be_b.select_move(b)
+    print(move, move_b)
+    
+    
+test_play_sequence(10)
+#test_eval_recursive()
     
 
