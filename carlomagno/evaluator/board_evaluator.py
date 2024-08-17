@@ -9,7 +9,9 @@ import random
 
 class BoardEvaluator():
     
-    def __init__(self, model=None, sigma=0.0, look_ahead=0):        
+    def __init__(self, model=None, sigma=0.0, look_ahead=0):
+        self.boards = set()
+        self.boards.clear()
         self.sigma = sigma
         self.look_ahead = look_ahead
         dev = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -39,7 +41,7 @@ class BoardEvaluator():
         
     
     def select_move(self, board):
-        moves = list(self.eval_moves(board))
+        moves = list(self.eval_moves(board))        
         checkmate_moves = filter(lambda x: x[2], moves)
         for m in checkmate_moves:
             return m[0:2]
@@ -51,24 +53,37 @@ class BoardEvaluator():
             else:
                 res = max(moves, key=lambda x: x[1])
         except Exception as e:
-            print ('No moves')
             return (None, 0.0)
         return res[0:2]
         
 
     def eval_moves(self, board, level=0, source_move=None):
         for m in board.legal_moves:
-            board.push(m)            
+            board.push(m)
+            str_b = cm.board_to_string(board)                
+            if str_b in self.boards:
+                board.pop()
+                continue
             if level < self.look_ahead:
                 if level == 0:
                     source_move = m
                 for nm in self.eval_moves(board, level+1, source_move):            
                     yield (source_move, nm[1], nm[2])
-            else:                
-                if not board.is_repetition():                                    
-                    v = cm.board_to_vector(board)
-                    score = self.evaluate(v) + random.gauss(0, self.sigma)            
-                    yield (m, score, board.is_checkmate())
+            else:                       
+                v = cm.board_to_vector(board)
+                score = self.evaluate(v) + random.gauss(0, self.sigma)            
+                yield (m, score, board.is_checkmate())
             board.pop()
+    
+    
+    def apply_move(self, board, move):
+        board.push(move)
+        str_b = cm.board_to_string(board)
+        if str_b in self.boards:
+            board.pop()
+        else:
+            self.boards.add(str_b)
             
     
+    def reset_boards(self):
+        self.boards.clear()

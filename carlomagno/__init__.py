@@ -17,6 +17,10 @@ def board_to_vector(board):
     vec.append(turn)
     return vec
 
+def board_to_string(board):
+    v = board_to_vector(board)
+    return '|'.join(map(lambda x: str(x), v))
+
 def get_boards_from_game(game):
     res = []        
     if game.headers['Termination'] != 'Normal':

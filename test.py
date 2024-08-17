@@ -93,7 +93,7 @@ def test_play():
             draw = True
             game_ended = True
             continue
-        board.push(move)
+        be_w.apply_move(board, move)
         game_ended = board.is_checkmate() or board.is_stalemate()
         if not game_ended:
             move, score = be_b.select_move(board)
@@ -103,7 +103,7 @@ def test_play():
                 draw = True
                 game_ended = True
                 continue
-            board.push(move)
+            be_b.apply_move(board, move)
             game_ended = board.is_checkmate() or board.is_stalemate()
         else:
             white_win = True
@@ -135,6 +135,8 @@ def get_random_move(board):
 def test_play_sequence(games):
     counts = {}
     for g in range(games):
+        be_w.reset_boards()
+        be_b.reset_boards()
         res = test_play()
         if res not in counts:
             counts[res] = 1.0 / games
