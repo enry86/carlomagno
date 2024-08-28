@@ -16,15 +16,16 @@ class BoardEvaluator():
         self.look_ahead = look_ahead
         dev = "cuda:0" if torch.cuda.is_available() else "cpu"
         device = torch.device(dev)
+        self.load_model()
         if model is not None and os.path.exists(model):
-            #print(f'Loading model from file: [{model}] with sigma: [{self.sigma}]')
-            self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)
+            #print(f'Loading model from file: [{model}] with sigma: [{self.sigma}]')            
             self.model.load_state_dict(torch.load(model, map_location=device))
-        else:
-            #print(f'Loading new model with sigma: [{self.sigma}]')
-            self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)                    
+                
         self.model.eval()
-        
+    
+    def load_model(self):
+        self.model = nn_evaluator.NNEvalutator(65, 1, 256, 4)
+    
         
     def evaluate(self, input):
         input_t = torch.tensor(input)
@@ -40,6 +41,14 @@ class BoardEvaluator():
         self.model.start_training(train_x, train_y, test_x, test_y, epochs, filename)
         
     
+    def test(self, test_ds):
+        test_x = torch.tensor(test_ds[0])
+        test_y = torch.tensor(test_ds[1])
+        
+        err = self.model.test(test_x, test_y)
+        print(f'Model tested with error: {err}')
+    
+    
     def select_move(self, board):
         moves = list(self.eval_moves(board))        
         checkmate_moves = filter(lambda x: x[2], moves)
@@ -54,13 +63,15 @@ class BoardEvaluator():
                 res = max(moves, key=lambda x: x[1])
         except Exception as e:
             return (None, 0.0)
+        #print ('SEL:', res)
         return res[0:2]
         
 
     def eval_moves(self, board, level=0, source_move=None):
-        for m in board.legal_moves:
+        for m in list(board.legal_moves):
             board.push(m)
             str_b = cm.board_to_string(board)
+            
             if board.is_checkmate():
                 board.pop()
                 return (m, -1.0 if board.turn else 1.0 , True)
@@ -69,12 +80,16 @@ class BoardEvaluator():
                 continue
             if level < self.look_ahead:
                 if level == 0:
+                    v = cm.board_to_vector(board)
+                    source_score = self.evaluate(v) + random.gauss(0, self.sigma)
                     source_move = m
-                for nm in self.eval_moves(board, level+1, source_move):            
-                    yield (source_move, nm[1], nm[2])
-            else:                       
+                for nm in list(self.eval_moves(board, level+1, source_move)):
+                    #print (source_move, nm[0], nm[1], nm[2])
+                    yield (source_move, source_score+nm[1], nm[2])
+            elif str_b not in self.boards:                       
                 v = cm.board_to_vector(board)
-                score = self.evaluate(v) + random.gauss(0, self.sigma)            
+                score = self.evaluate(v) + random.gauss(0, self.sigma)
+                #print ('LEAF:', m, score, board.is_checkmate())
                 yield (m, score, board.is_checkmate())
             board.pop()
     
@@ -90,3 +105,8 @@ class BoardEvaluator():
     
     def reset_boards(self):
         self.boards.clear()
+
+class BoardEvaluatorSmall(BoardEvaluator):
+    
+    def load_model(self):
+        self.model = nn_evaluator.NNEvalutator(65, 1, 128, 3)

@@ -6,8 +6,8 @@ import chess
 import chess.pgn
 import random
 
-be_w = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.01, look_ahead=0)
-be_b = board_evaluator.BoardEvaluator('models/be_norm_v0.0.0.state', 0.01)
+be_w = board_evaluator.BoardEvaluatorSmall('models/be_norm_v0.0.0.state', 0.01, look_ahead=0)
+be_b = board_evaluator.BoardEvaluator('models/be_big_v0.0.1.state', 0.01)
 
 def test_evaluation(b):    
     best_score = 0.0
@@ -109,7 +109,6 @@ def test_play():
             white_win = True
             res = -1
             #print('WHITE WINS')
-        
     if not white_win and not draw:
         res = 1
         #print('BLACK WINS')

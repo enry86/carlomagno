@@ -37,7 +37,15 @@ class NNEvalutator(nn.Module):
 
     def evaluate(self, features):
         x = torch.tensor(features)        
-        return self.forward(x)        
+        return self.forward(x)     
+    
+    
+    def test(self, test_x, test_y):
+        self.eval()
+        test_pred_y = self.forward(test_x)
+        test_loss = self.loss_fn(test_pred_y, test_y)
+        test_loss = float(test_loss)
+        return test_loss
 
     def start_training(self, train_x, train_y, test_x, test_y, epochs, output):
         if len(train_x) == 0 or len(test_x) == 0:
